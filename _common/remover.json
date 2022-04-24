@@ -1,0 +1,15 @@
+{
+    "target": "./package.json",
+    "destination": "./dist/package.json",
+    "remove": [
+        "devDependencies",
+        "optionalDependencies",
+        "main",
+        "scripts",
+        "keywords",
+        "homepage",
+        "bugs",
+        "copier",
+        "config"
+    ]
+}

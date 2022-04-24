@@ -1,0 +1,75 @@
+{
+    "name": "template",
+    "version": "0.0.1",
+    "description": "Template for nodejs app with fastify",
+    "docker_image": "template",
+    "main": "app.js",
+    "scripts": {
+        "up": "ncu --reject /chalk$/ && ncu --reject /chalk$/ -u && rimraf ./package-lock.json && npm i && ncu --reject /chalk$/",
+        "ncu": "ncu --reject /chalk$/",
+        "build": "rimraf ./dist && tsc --project ./tsconfig.json && json-key-remover --config ./_common/remover.json && files-copier -e build",
+        "start": "node ./dist/app.js --config ./config.toml",
+        "start:dev": "ts-node ./src/app.ts --config ./config.toml",
+        "test:e2e": "ts-mocha -p ./tests/tsconfig.json --config ./tests/mocha.e2e.config.json",
+        "test:unit": "ts-mocha -p ./tests/tsconfig.json --config ./tests/mocha.unit.config.json",
+        "test": "npm run test:unit && npm run test:e2e",
+        "docker:build": "node ./_common/build/build.js",
+        "docker:publish": "npm run docker:build && node ./_common/build/tag.js && node ./_common/build/push_version.js && node ./_common/build/push_latest.js",
+        "interface_generator": "node ./_common/tools/interface_generator.js ./_common/interface_generator.json"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/samurayii/fastify-app-starter.git"
+    },
+    "keywords": [
+        "typescript",
+        "fastify",
+        "template"
+    ],
+    "author": "Nuzhnov A.A.",
+    "license": "GNU GPLv3",
+    "bugs": {
+        "url": "https://github.com/samurayii/fastify-app-starter/issues"
+    },
+    "homepage": "https://github.com/samurayii/fastify-app-starter.git#readme",
+    "optionalDependencies": {
+        "@commitlint/cli": "^16.2.3",
+        "@typescript-eslint/eslint-plugin": "^5.20.0",
+        "@typescript-eslint/parser": "^5.20.0",
+        "eslint": "^8.14.0",
+        "npm-check-updates": "^12.5.9",
+        "ts-node": "^10.7.0"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.3.1",
+        "@types/got": "^9.6.12",
+        "@types/mocha": "^9.1.1",
+        "@types/node": "^17.0.25",
+        "chai": "^4.3.6",
+        "files-copier": "^0.1.1",
+        "got": "^9.6.0",
+        "json-key-remover": "^0.1.4",
+        "rimraf": "^3.0.2",
+        "ts-mocha": "^9.0.2",
+        "typescript": "^4.6.3"
+    },
+    "copier": {
+        "build": {
+            "rewrite": true,
+            "copy": [
+                {
+                    "from": "./package-lock.json",
+                    "to": "./dist/package-lock.json"
+                }
+            ]
+        }
+    },
+    "dependencies": {
+        "chalk": "=4.1.2",
+        "commander": "^9.2.0",
+        "fastify": "^3.28.0",
+        "json-from-default-schema": "^1.0.1",
+        "jtomler": "^1.0.1",
+        "logger-event-emitter": "^0.1.3"
+    }
+}

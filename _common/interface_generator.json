@@ -1,0 +1,15 @@
+{
+    "compiler": {
+        "bannerComment": "",
+        "style": { 
+            "bracketSpacing": false, 
+            "printWidth": 120, 
+            "semi": true, 
+            "singleQuote": false, 
+            "tabWidth": 4, 
+            "trailingComma": "none", 
+            "useTabs": false 
+        }
+    },
+    "targets": []
+}
