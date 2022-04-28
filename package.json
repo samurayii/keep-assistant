@@ -2,7 +2,6 @@
     "name": "template",
     "version": "0.0.1",
     "description": "Template for nodejs app with fastify",
-    "docker_image": "template",
     "scripts": {
         "up": "ncu --reject /chalk$/ && ncu --reject /chalk$/ -u && rimraf ./package-lock.json && npm i && ncu --reject /chalk$/",
         "ncu": "ncu --reject /chalk$/",
