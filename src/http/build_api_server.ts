@@ -1,6 +1,6 @@
 import { FastifyError, FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import Fastify from "fastify";
-import * as chalk from "chalk";
+import chalk from "chalk";
 import { IApiServerConfig } from "../lib/config.interfaces";
 import { getByteSize } from "../lib/tools/get_byte_size";
 import { routePing } from "./routes/ping";

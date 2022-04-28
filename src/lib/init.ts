@@ -1,8 +1,8 @@
 import { Command } from "commander";
-import * as chalk from "chalk";
+import chalk from "chalk";
 import * as fs from "fs";
 import * as path from "path";
-import * as Ajv from "ajv";
+import Ajv from "ajv";
 import jtomler from "jtomler";
 import json_from_schema from "json-from-default-schema";
 import * as config_schema from "./schemes/config.json";

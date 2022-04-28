@@ -1,5 +1,5 @@
 import config from "./lib/init";
-import * as chalk from "chalk";
+import chalk from "chalk";
 import { LoggerEventEmitter } from "logger-event-emitter";
 import { buildApiServer } from "./http/build_api_server";
 
