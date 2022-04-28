@@ -13,5 +13,5 @@
     prefix = "/api"             # префикс
     connection_timeout = 0      # таймаут сервера в милисекундах
     keep_alive_timeout = 5000   # таймаут keep-alive сервера в милисекундах
-    body_limit = "1m"           # максимальный размер тела запроса в байтах
+    body_limit = "1mb"          # максимальный размер тела запроса (b, kb, mb)
     trust_proxy = false         # доверие proxy закголовку
