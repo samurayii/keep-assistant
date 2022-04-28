@@ -3,8 +3,8 @@
     "version": "0.0.1",
     "description": "Template for nodejs app with fastify",
     "scripts": {
-        "up": "ncu --reject /chalk$/ && ncu --reject /chalk$/ -u && rimraf ./package-lock.json && npm i && ncu --reject /chalk$/",
-        "ncu": "ncu --reject /chalk$/",
+        "up": "ncu --configFilePath ./_common --configFileName ncu_up_config.json && rimraf ./package-lock.json && npm i && ncu --configFilePath ./_common --configFileName ncu_config.json",
+        "ncu": "ncu --configFilePath ./_common --configFileName ncu_config.json",
         "build": "rimraf ./dist && tsc --project ./tsconfig.json && json-key-remover --config ./_common/remover.json && files-copier -e build",
         "start": "node ./dist/app.js --config ./config.toml",
         "start:dev": "ts-node ./src/app.ts --config ./config.toml",
