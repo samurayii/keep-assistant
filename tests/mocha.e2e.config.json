@@ -6,6 +6,6 @@
     "timeout": 2000,
     "ui": "bdd",
     "spec": [
-        "tests/e2e/**/*.spec.ts"
+        "./tests/e2e/**/*.spec.ts"
     ]
 }

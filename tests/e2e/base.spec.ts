@@ -1,7 +1,7 @@
 import { LoggerEventEmitter } from "logger-event-emitter";
 import { buildApiServer } from "../../src/http/build_api_server";
 import { IAppConfig } from "../../src/lib/config.interfaces";
-import * as got from "got";
+import * as superagent from "superagent";
 import { expect } from "chai";
 
 describe("Base API", async function() {
@@ -45,42 +45,42 @@ describe("Base API", async function() {
     });
 
     it("/_ping", async function () {
-        const response = await got.get(`http://localhost:${config.api.port}/_ping`);  
+        const response = await superagent(`http://localhost:${config.api.port}/_ping`);  
         expect(response.statusCode).to.equal(200);        
     });
 
     it("/_ping (prefix /v1)", async function () {
-        const response = await got.get(`http://localhost:${config.api.port}${config.api.prefix}/v1/_ping`);  
+        const response = await superagent(`http://localhost:${config.api.port}${config.api.prefix}/v1/_ping`);  
         expect(response.statusCode).to.equal(200);        
     });
 
     it("/healthcheck", async function () {
-        const response = await got.get(`http://localhost:${config.api.port}/healthcheck`);  
+        const response = await superagent(`http://localhost:${config.api.port}/healthcheck`);  
         expect(response.statusCode).to.equal(200);        
     });
 
     it("/healthcheck (prefix /v1)", async function () {
-        const response = await got.get(`http://localhost:${config.api.port}${config.api.prefix}/v1/healthcheck`);  
+        const response = await superagent(`http://localhost:${config.api.port}${config.api.prefix}/v1/healthcheck`);  
         expect(response.statusCode).to.equal(200);        
     });
 
     it("/healthcheck/readiness", async function () {
-        const response = await got.get(`http://localhost:${config.api.port}/healthcheck/readiness`);  
+        const response = await superagent(`http://localhost:${config.api.port}/healthcheck/readiness`);  
         expect(response.statusCode).to.equal(200);        
     });
 
     it("/healthcheck/readiness (prefix /v1)", async function () {
-        const response = await got.get(`http://localhost:${config.api.port}${config.api.prefix}/v1/healthcheck/readiness`);  
+        const response = await superagent(`http://localhost:${config.api.port}${config.api.prefix}/v1/healthcheck/readiness`);  
         expect(response.statusCode).to.equal(200);        
     });
 
     it("/healthcheck/liveness", async function () {
-        const response = await got.get(`http://localhost:${config.api.port}/healthcheck/readiness`);  
+        const response = await superagent(`http://localhost:${config.api.port}/healthcheck/readiness`);  
         expect(response.statusCode).to.equal(200);        
     });
 
     it("/healthcheck/liveness (prefix /v1)", async function () {
-        const response = await got.get(`http://localhost:${config.api.port}${config.api.prefix}/v1/healthcheck/readiness`);  
+        const response = await superagent(`http://localhost:${config.api.port}${config.api.prefix}/v1/healthcheck/readiness`);  
         expect(response.statusCode).to.equal(200);        
     });
 
