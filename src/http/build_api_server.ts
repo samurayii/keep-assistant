@@ -48,7 +48,7 @@ export function buildApiServer (config: IApiServerConfig, logger: ILoggerEventEm
                 if (typeof body === "object") {
                     body = JSON.stringify(body, null, 2);
                 }
-                logger.debug(`Request ID ${request.id}, ${chalk.yellow(request.method)} ${chalk.cyan(request.url)}\BODY:\n${body}`);
+                logger.debug(`Request ID ${request.id}, ${chalk.yellow(request.method)} ${chalk.cyan(request.url)}\nBODY:\n${body}`);
             }
         });
 

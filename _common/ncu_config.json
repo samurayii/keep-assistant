@@ -1,6 +1,5 @@
 {
     "reject": [
-        "@elastic/elasticsearch",
         "chalk"
     ]
 }

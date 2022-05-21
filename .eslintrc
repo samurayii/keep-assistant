@@ -1,6 +1,15 @@
 {
     "parser": "@typescript-eslint/parser",
-    "extends": ["plugin:@typescript-eslint/recommended"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "ignorePatterns": [
+        "dist/*",
+        "**/*.d.ts",
+        "src/types/",
+        "_common"
+    ],
     "parserOptions": {
         "ecmaVersion": 2018,
         "sourceType": "module"
@@ -11,10 +20,10 @@
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/no-explicit-any": 1,
         "@typescript-eslint/no-inferrable-types": [
-            "warn", {
-                "ignoreParameters": true
-            }
+          "warn", {
+            "ignoreParameters": true
+          }
         ],
-        "@typescript-eslint/no-unused-vars": "error"
+        "@typescript-eslint/no-unused-vars": "warn"
     }
 }

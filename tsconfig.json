@@ -1,26 +1,44 @@
 {
     "compilerOptions": {
-        "esModuleInterop": true,
+        "lib": ["es2021"],
         "module": "commonjs",
-        "sourceMap": false,
-        "paths": {
-            "*": [
-                "./node_modules/*",
-                "./src/types/*"
-            ]
-        },
+        "target": "es2021",
         "moduleResolution": "node",
-        "noImplicitAny": true,
-        "resolveJsonModule": true,
-        "target": "es2017",
+        "sourceMap": false,
         "removeComments": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
         "outDir": "./dist",
         "baseUrl": "./",
         "rootDir": "./src",
-        "typeRoots": ["./src/types","./node_modules/@types"]
+        "allowJs": false,
+        "checkJs": false,
+        "typeRoots": [
+            "./src/types",
+            "./node_modules/@types"
+        ],
+        "paths": {
+            "*": [
+                "node_modules/*",
+                "src/types/*"
+            ]
+        },
+        "resolveJsonModule": true,
+        "alwaysStrict": true,
+        "preserveSymlinks": true,
+        "skipLibCheck": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "isolatedModules": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
     },
-    "include": ["./src/**/*"]
+    "include": ["./src/**/*.ts"]
 }
-

@@ -1,7 +1,7 @@
 import { LoggerEventEmitter } from "logger-event-emitter";
 import { buildApiServer } from "../../src/http/build_api_server";
 import { IAppConfig } from "../../src/lib/config.interfaces";
-import * as superagent from "superagent";
+import superagent from "superagent";
 import { expect } from "chai";
 
 describe("Base API", async function() {
