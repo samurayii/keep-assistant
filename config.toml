@@ -1,5 +1,5 @@
 [logger]
-    level = "trace2"
+    level = "trace"
 
 [api]
     enable = true
