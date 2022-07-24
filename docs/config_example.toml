@@ -1,7 +1,7 @@
 [logger]                    # настройка логгера
     name = ""               # имя логгера
     enable = true           # активация
-    level = "error"         # уровень (fatal, info, error , warn, debug, trace)
+    level = "error"         # уровень (fatal, error, warn, info, debug, trace)
     timestamp = "none"      # вывод времени full, short, unix и none
 
 [api]
