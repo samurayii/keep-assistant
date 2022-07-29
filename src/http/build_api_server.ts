@@ -8,6 +8,7 @@ import { routeHealthcheck } from "./routes/healthcheck";
 import { routeHealthcheckReadiness } from "./routes/healthcheck_readiness";
 import { routeHealthcheckLiveness } from "./routes/healthcheck_liveness";
 import { ILoggerEventEmitter } from "logger-event-emitter";
+import { IApiServerFastifyInstance } from "./interfaces";
 
 export function buildApiServer (config: IApiServerConfig, logger: ILoggerEventEmitter): FastifyInstance {
 
@@ -80,20 +81,32 @@ export function buildApiServer (config: IApiServerConfig, logger: ILoggerEventEm
         });
     });
 
-    server.register(routePing);
-    server.register(routeHealthcheck);
-    server.register(routeHealthcheckReadiness);
-    server.register(routeHealthcheckLiveness);
+    server.register( async function (fastify: IApiServerFastifyInstance) {
+
+        fastify.decorate("logger", logger);
+
+        routePing(fastify);
+        routeHealthcheck(fastify);
+        routeHealthcheckReadiness(fastify);
+        routeHealthcheckLiveness(fastify);
+
+    });
 
     const prefix_v1 = `${config.prefix.replace(/\/$/,"")}/v1`;
     const route_options_v1 = {
         prefix: prefix_v1
     };
 
-    server.register(routePing, route_options_v1);
-    server.register(routeHealthcheck, route_options_v1);
-    server.register(routeHealthcheckReadiness, route_options_v1);
-    server.register(routeHealthcheckLiveness, route_options_v1);
+    server.register( async function (fastify: IApiServerFastifyInstance) {
+
+        fastify.decorate("logger", logger);
+
+        routePing(fastify);
+        routeHealthcheck(fastify);
+        routeHealthcheckReadiness(fastify);
+        routeHealthcheckLiveness(fastify);
+
+    }, route_options_v1);
 
     return server;
 

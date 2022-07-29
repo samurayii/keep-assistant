@@ -29,19 +29,21 @@ const bootstrap = async () => {
             });
         }
 
-        const stop_app = async () => {
-            await api_server.close();
-            process.exit();
+        const stop_app = () => {
+            api_server.close();
+            setImmediate( () => {
+                process.exit();
+            });
         };
 
-        process.on("SIGTERM", async () => {
+        process.on("SIGTERM", () => {
             logger.info(`Signal ${chalk.cyan("SIGTERM")} received`);
-            await stop_app();
+            stop_app();
         });
 
-        process.on("SIGINT", async () => {
+        process.on("SIGINT", () => {
             logger.info(`Signal ${chalk.cyan("SIGINT")} received`);
-            await stop_app();
+            stop_app();
         });
 
     } catch (error) {
