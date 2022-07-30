@@ -80,7 +80,10 @@ if (!fs.existsSync(full_config_path)) {
 
 const config: IAppConfig = <IAppConfig>json_from_schema(jtomler.parseFileSync(full_config_path), config_schema);
 
-const ajv = new Ajv({allErrors: true});
+const ajv = new Ajv({
+    allErrors: true, 
+    strict: false
+});
 const validate = ajv.compile(config_schema);
 
 if (validate(config) === false) {
