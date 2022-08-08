@@ -42,7 +42,7 @@ export function buildApiServer (config: IApiServerConfig, logger: ILoggerEventEm
                 return;
             }
 
-            if (request.body === null) {
+            if (request.body === null || request.body === undefined) {
                 logger.debug(`Request ID ${chalk.green(request.id)} ${chalk.gray("-->")} ${chalk.yellow(request.method)} ${chalk.cyan(request.url)}`);
             } else {
                 let body = request.body;

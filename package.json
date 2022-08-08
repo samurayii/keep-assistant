@@ -12,8 +12,7 @@
         "test:unit": "ts-mocha -p ./tests/tsconfig.json --config ./tests/mocha.unit.config.json",
         "test": "npm run test:unit && npm run test:e2e",
         "docker:build": "node ./_common/build/build.js",
-        "docker:publish": "npm run docker:build && node ./_common/build/tag.js && node ./_common/build/push_version.js && node ./_common/build/push_latest.js",
-        "interface_generator": "node ./_common/tools/interface_generator.js ./_common/interface_generator.json"
+        "docker:publish": "npm run docker:build && node ./_common/build/tag.js && node ./_common/build/push_version.js && node ./_common/build/push_latest.js"
     },
     "repository": {
         "type": "git",
