@@ -31,6 +31,7 @@
                     "enum": ["full","short","unix","none"]
                 }
             },
+            "additionalProperties": false,
             "required": [
                 "name",
                 "enable",
@@ -105,6 +106,7 @@
                     "env": "TEMPLATE_API_TRUST_PROXY"
                 }
             },
+            "additionalProperties": false,
             "required": [
                 "enable",
                 "hostname",
