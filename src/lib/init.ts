@@ -8,46 +8,14 @@ import json_from_schema from "json-from-default-schema";
 import * as config_schema from "./schemes/config.json";
 import { IAppConfig } from "./config.interfaces";
 import { AjvErrorHelper } from "./tools/ajv_error_helper";
-
-type TPackage = {
-    version: string
-    name: string
-    [key: string]: unknown
-}
+import { findPackage } from "./tools/find_package";
 
 type TOptions = {
     config: string
 }
 
-const findPkg = (): TPackage => {
-
-    const cwd_pkg_full_path = path.resolve(process.cwd(), "package.json");
-    const dirname_pkg_full_path = path.resolve(__dirname, "package.json");
-    const app_pkg_full_path = path.resolve(path.dirname(process.argv[1]), "package.json");
-    const require_pkg_full_path = path.resolve(path.dirname(require.main.filename), "package.json"); 
-
-    if (fs.existsSync(dirname_pkg_full_path) === true) {
-        return <TPackage>JSON.parse(fs.readFileSync(dirname_pkg_full_path).toString());
-    }
-    if (fs.existsSync(app_pkg_full_path) === true) {
-        return <TPackage>JSON.parse(fs.readFileSync(app_pkg_full_path).toString());
-    }
-    if (fs.existsSync(require_pkg_full_path) === true) {
-        return <TPackage>JSON.parse(fs.readFileSync(require_pkg_full_path).toString());
-    }   
-    if (fs.existsSync(cwd_pkg_full_path) === true) {
-        return <TPackage>JSON.parse(fs.readFileSync(cwd_pkg_full_path).toString());
-    }
-
-    return <TPackage>{
-        version: "unknown",
-        name: "template"
-    };
-
-};
-
 const program = new Command();
-const pkg = findPkg();
+const pkg = findPackage();
 
 if (pkg === undefined) {
     console.error(`${chalk.bgRed(" FATAL ")} package.json not found`);

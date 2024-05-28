@@ -1,6 +1,0 @@
-[logger]
-    level = "trace"
-
-[api]
-    enable = true
-    logging = true

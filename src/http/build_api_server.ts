@@ -9,6 +9,7 @@ import { routeHealthcheckReadiness } from "./routes/healthcheck_readiness";
 import { routeHealthcheckLiveness } from "./routes/healthcheck_liveness";
 import { ILoggerEventEmitter } from "logger-event-emitter";
 import { IApiServerFastifyInstance } from "./interfaces";
+import { routeHealthcheckStartup } from "./routes/healthcheck_startup";
 
 export function buildApiServer (config: IApiServerConfig, logger: ILoggerEventEmitter): FastifyInstance {
 
@@ -57,7 +58,7 @@ export function buildApiServer (config: IApiServerConfig, logger: ILoggerEventEm
             if (ignore_regexp_request.test(request.url) === true) {
                 return;
             }
-            logger.debug(`Response ID ${chalk.green(request.id)} ${chalk.gray("<--")} ${chalk.yellow(request.method)} ${chalk.cyan(request.url)}, status: ${chalk.yellow(reply.statusCode)}, time: ${chalk.green(reply.getResponseTime())} ms`);
+            logger.debug(`Response ID ${chalk.green(request.id)} ${chalk.gray("<--")} ${chalk.yellow(request.method)} ${chalk.cyan(request.url)}, status: ${chalk.yellow(reply.statusCode)}, time: ${chalk.green(reply.elapsedTime)} ms`);
         });
 
     }
@@ -89,6 +90,7 @@ export function buildApiServer (config: IApiServerConfig, logger: ILoggerEventEm
         routeHealthcheck(fastify);
         routeHealthcheckReadiness(fastify);
         routeHealthcheckLiveness(fastify);
+        routeHealthcheckStartup(fastify);
 
     });
 
@@ -105,6 +107,7 @@ export function buildApiServer (config: IApiServerConfig, logger: ILoggerEventEm
         routeHealthcheck(fastify);
         routeHealthcheckReadiness(fastify);
         routeHealthcheckLiveness(fastify);
+        routeHealthcheckStartup(fastify);
 
     }, route_options_v1);
 
