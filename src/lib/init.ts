@@ -42,11 +42,18 @@ if (process.env["TEMPLATE_CONFIG_PATH"] === undefined) {
 const full_config_path = path.resolve(process.cwd(), options.config);
 
 if (!fs.existsSync(full_config_path)) {
-    console.error(`${chalk.bgRed(" FATAL ")} Config file ${full_config_path} not found`);
+    console.error(`${chalk.bgRed(" FATAL ")} Config file ${chalk.red(full_config_path)} not found`);
     process.exit(1);
 }
 
-const config: IAppConfig = <IAppConfig>json_from_schema(jtomler.parseFileSync(full_config_path), config_schema);
+let config: IAppConfig;
+
+try {
+    config = <IAppConfig>json_from_schema(jtomler.parseFileSync(full_config_path), config_schema);
+} catch (error) {
+    console.error(`${chalk.bgRed(" FATAL ")} Config file ${chalk.red(full_config_path)} parsing error. Error: ${chalk.red(error.message)}`);
+    process.exit(1);
+}
 
 const ajv = new Ajv({
     allErrors: true, 
