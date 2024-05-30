@@ -63,7 +63,7 @@ const validate = ajv.compile(config_schema);
 
 if (validate(config) === false) {
     const error_text = AjvErrorHelper(validate);
-    console.error(`${chalk.bgRed(" FATAL ")} Config schema errors:\n${error_text}`);
+    console.error(`${chalk.bgRed(" FATAL ")} Config schema errors:\n${chalk.red(error_text)}`);
     process.exit(1);
 }
 
