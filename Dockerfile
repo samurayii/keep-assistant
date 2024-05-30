@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM mirror.gcr.io/node:20-alpine AS builder
 ARG NPM_REGISTRY=https://registry.npmjs.org
 RUN npm --registry $NPM_REGISTRY install npm -g
 
@@ -15,7 +15,7 @@ COPY default_config.toml /dist/config.toml
 
 RUN node /dist/app.js --version
 
-FROM node:20-alpine
+FROM mirror.gcr.io/node:20-alpine
 
 USER root
 
