@@ -23,19 +23,19 @@ ENV NODE_ENV=production
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PATH=$PATH:/home/node/.npm-global/bin
 
-WORKDIR /template
+WORKDIR /keep-assistant
 
 ENTRYPOINT [ "node" ]
 CMD [ "app.js", "--config", "config.toml" ]
 
 
-COPY --from=builder /dist /template
+COPY --from=builder /dist /keep-assistant
 
-RUN chown -R node:node /template
+RUN chown -R node:node /keep-assistant
 USER node
 
 RUN node --version && \
     npm --version && \
-    cd /template && \
+    cd /keep-assistant && \
     npm ci && \
     node app.js -v

@@ -1,3 +1,3 @@
-# fastify-app-starter
+# Keep-assistant
 
-install: `npm install -g npm && npm install`
+[Документация](docs/README.md)

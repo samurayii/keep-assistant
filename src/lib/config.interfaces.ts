@@ -1,4 +1,6 @@
 import { ILoggerEventEmitterConfig } from "logger-event-emitter";
+import { IMetricsConfig } from "./metrics";
+import { ISchedulerConfig } from "./scheduler";
 
 export interface IApiServerConfig {
     enable: boolean
@@ -16,4 +18,6 @@ export interface IApiServerConfig {
 export interface IAppConfig {
     logger: ILoggerEventEmitterConfig
     api: IApiServerConfig
+    metrics: IMetricsConfig
+    scheduler: ISchedulerConfig
 }

@@ -10,6 +10,8 @@ import { routeHealthcheckLiveness } from "./routes/healthcheck_liveness";
 import { ILoggerEventEmitter } from "logger-event-emitter";
 import { IApiServerFastifyInstance } from "./interfaces";
 import { routeHealthcheckStartup } from "./routes/healthcheck_startup";
+import { routeMetrics } from "./routes/metrics";
+import { routeActions } from "./routes/actions";
 
 export function buildApiServer (config: IApiServerConfig, logger: ILoggerEventEmitter): FastifyInstance {
 
@@ -91,6 +93,7 @@ export function buildApiServer (config: IApiServerConfig, logger: ILoggerEventEm
         routeHealthcheckReadiness(fastify);
         routeHealthcheckLiveness(fastify);
         routeHealthcheckStartup(fastify);
+        routeMetrics(fastify);
 
     });
 
@@ -108,6 +111,8 @@ export function buildApiServer (config: IApiServerConfig, logger: ILoggerEventEm
         routeHealthcheckReadiness(fastify);
         routeHealthcheckLiveness(fastify);
         routeHealthcheckStartup(fastify);
+        routeMetrics(fastify);
+        routeActions(fastify);
 
     }, route_options_v1);
 
