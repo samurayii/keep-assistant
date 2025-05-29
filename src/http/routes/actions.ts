@@ -11,19 +11,17 @@ export async function routeActions(
     metrics = $Inject<IMetrics>(Metrics)
 ) {
     
-    const url_path = "/actions";
+    const url_path_silence = "/actions/silence";
     
     metrics.createCounter("requests", "Requests for path");
     metrics.createCounter("requests_total", "Total requests count");
 
     metrics.add("requests_total", 0);
-    metrics.add("requests", 0, {
-        path: url_path
-    });
+    metrics.add("requests", 0, {path: url_path_silence});
 
     metrics.createHistogram("request_time_ms", [50, 100, 200, 500, 1000], "Request duration");
 
-    const handler = async function (request: IFastifyRequestActions, reply: FastifyReply) {
+    const handlerSilence = async function (request: IFastifyRequestActions, reply: FastifyReply) {
 
         const start_request_time = Date.now();
         const action_request: ISchedulerTaskDataSilenceAction = {
@@ -68,12 +66,8 @@ export async function routeActions(
         const result = await scheduler.runTask(action_request);
 
         metrics.add("requests_total", 1);
-        metrics.add("requests", 1, {
-            path: url_path
-        });
-        metrics.add("request_time_ms", Date.now() - start_request_time, {
-            path: url_path
-        });
+        metrics.add("requests", 1, {path: url_path_silence});
+        metrics.add("request_time_ms", Date.now() - start_request_time, {path: url_path_silence});
 
         if (result.status !== "success") {
             reply.code(200);
@@ -88,8 +82,8 @@ export async function routeActions(
     };
 
     fastify.route({
-        url: url_path,
-        handler: handler,
+        url: url_path_silence,
+        handler: handlerSilence,
         method: ["GET"]
     });
     
