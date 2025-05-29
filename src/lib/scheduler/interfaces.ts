@@ -13,9 +13,10 @@ export interface ISchedulerTaskData {
 
 export interface ISchedulerTaskDataSilenceAction extends ISchedulerTaskData {
     data: {
-        namespace: string
-        container: string
-        cluster_name: string
+        namespace?: string
+        container?: string
+        cluster_name?: string
+        duration?: number
     }
 }
 
@@ -24,9 +25,10 @@ export interface IScheduler {
 }
 
 export interface ISchedulerConfig {
-    host: string
+    hostname: string
     port: number
     protocol: "http" | "https"
+    prefix: string
     api_key: string
 }
 

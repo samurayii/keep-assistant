@@ -172,11 +172,61 @@
                 "prefix",
                 "labels"
             ]
+        },
+        "scheduler": {
+            "type": "object",
+            "default": {},
+            "env": "KA_SCHEDULER",
+            "properties": {
+                "hostname": {
+                    "type": "string",
+                    "default": "",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "env": "KA_SCHEDULER_HOSTNAME"
+                },
+                "port": {
+                    "type": "integer",
+                    "default": 443,
+                    "env": "KA_SCHEDULER_PORT",
+                    "minimum": 1,
+                    "maximum": 65535
+                },
+                "protocol": {
+                    "type": "string",
+                    "env": "KA_SCHEDULER_PROTOCOL",
+                    "default": "https",
+                    "enum": ["http","https"]
+                },
+                "api_key": {
+                    "type": "string",
+                    "default": "",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "env": "KA_SCHEDULER_API_KEY"
+                },
+                "prefix": {
+                    "type": "string",
+                    "default": "/",
+                    "minLength": 0,
+                    "maxLength": 32,
+                    "pattern": "^(\/[a-zA-Z]{1}|)[-a-zA-Z0-9\/]{0,31}$"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "hostname",
+                "port",
+                "protocol",
+                "api_key",
+                "prefix"
+            ]
         }
     },
     "required": [
         "logger",
         "api",
-        "metrics"
+        "metrics",
+        "scheduler"
     ]
 }
