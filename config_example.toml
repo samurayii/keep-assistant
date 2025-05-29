@@ -11,7 +11,14 @@
     port = 3001                 # порт
     backlog = 511               # очередь баклога
     prefix = "/api"             # префикс
-    connection_timeout = 0      # таймаут сервера в милисекундах
-    keep_alive_timeout = 5000   # таймаут keep-alive сервера в милисекундах
+    connection_timeout = 0      # таймаут сервера в миллисекундах
+    keep_alive_timeout = 5000   # таймаут keep-alive сервера в миллисекундах
     body_limit = "1mb"          # максимальный размер тела запроса (b, kb, mb)
-    trust_proxy = false         # доверие proxy закголовку
+    trust_proxy = false         # доверие proxy заголовку
+
+[connection]                # настройка подключения к серверу keep
+    hostname = ""           # имя хоста
+    port = 443              # порт
+    protocol = "https"      # протокол http или https
+    api_key = ""            # ключ доступа
+    prefix = "/"            # префикс пути

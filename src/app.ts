@@ -18,7 +18,7 @@ const health_controller = new HealthController(logger.child("health-controller")
 $Singleton(Metrics.name, undefined, () => {return metrics;});
 $Singleton(HealthController.name, undefined, () => {return health_controller;});
 
-const scheduler = new Scheduler(config.scheduler, logger.child("scheduler"));
+const scheduler = new Scheduler(config.connection, logger.child("scheduler"));
 
 $Singleton(Scheduler.name, undefined, () => {return scheduler;});
 

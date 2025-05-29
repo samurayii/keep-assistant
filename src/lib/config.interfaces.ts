@@ -19,5 +19,5 @@ export interface IAppConfig {
     logger: ILoggerEventEmitterConfig
     api: IApiServerConfig
     metrics: IMetricsConfig
-    scheduler: ISchedulerConfig
+    connection: ISchedulerConfig
 }
