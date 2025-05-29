@@ -1,4 +1,6 @@
-FROM mirror.gcr.io/node:20-alpine AS builder
+ARG DOCKER_REPO=docker.io/library
+
+FROM ${DOCKER_REPO}/node:22-alpine AS builder
 ARG NPM_REGISTRY=https://registry.npmjs.org
 RUN npm --registry $NPM_REGISTRY install npm -g
 
@@ -15,7 +17,7 @@ COPY default_config.toml /dist/config.toml
 
 RUN node /dist/app.js --version
 
-FROM mirror.gcr.io/node:20-alpine
+FROM ${DOCKER_REPO}/node:22-alpine
 
 USER root
 
@@ -27,7 +29,6 @@ WORKDIR /keep-assistant
 
 ENTRYPOINT [ "node" ]
 CMD [ "app.js", "--config", "config.toml" ]
-
 
 COPY --from=builder /dist /keep-assistant
 
