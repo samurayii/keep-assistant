@@ -14,4 +14,4 @@ include:
   - project: 'devops/cicd'
     file: 'base/kaniko_build.yml'
   - project: 'devops/cicd'
-    file: 'build/node/build.yml
+    file: 'build/node/build.yml'
