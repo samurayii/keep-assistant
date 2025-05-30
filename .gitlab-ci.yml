@@ -134,7 +134,7 @@ sign_image: &_sign_image
     - if: ($CI_COMMIT_BRANCH =~ /^bugfix\/.*$/) && ($STORY_IMAGE != null) && ($STORY_IMAGE != "")
     - if: ($CI_COMMIT_BRANCH =~ /^hotfix\/.*$/) && ($STORY_IMAGE != null) && ($STORY_IMAGE != "")
     - if: ($CI_COMMIT_BRANCH =~ /^feature\/.*$/) && ($STORY_IMAGE != null) && ($STORY_IMAGE != "")
-    - if: ($CI_COMMIT_BRANCH == "master") && ($STORY_IMAGE != null) && ($STORY_IMAGE != "")
+    - if: ($CI_COMMIT_BRANCH == "main") && ($STORY_IMAGE != null) && ($STORY_IMAGE != "")
     - if: ($CI_COMMIT_BRANCH =~ /^release\/.*$/) && ($STORY_IMAGE != null) && ($STORY_IMAGE != "")
   tags:
     - k8s
