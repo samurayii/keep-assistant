@@ -66,7 +66,7 @@ build_dev:
     - export DOCKER_TLS_CLIENT_CERT=docker_tls_client_cert=$(cat "$dockerTLSClientCert")
     - export DOCKER_TLS_CA=docker_tls_ca=$(cat "$dockerTLSCA")
   script:
-    - "/kaniko/executor --force --single-snapshot --cleanup --context $CI_PROJECT_DIR
+    - "/kaniko/executor --force --single-snapshot --cleanup --context $CI_PROJECT_DIR --build-arg DOCKER_REGISTRY=${FROM_DOCKER_REGISTRY}
       \ --dockerfile $CI_PROJECT_DIR/${DOCKERFILE_PATH:-Dockerfile} --destination ${DOCKER_REPO}/${STORY_IMAGE}:${STORY_IMAGE_TAG}
       \ --cache=false --cache-repo=${DOCKER_REPO}/${STORY_IMAGE} --cache-ttl=1h --skip-tls-verify-registry=registry.ss
       \ --build-arg $REPOSITORY_USER --build-arg $REPOSITORY_PASSWORD --build-arg CI_JOB_TOKEN=$CI_JOB_TOKEN
@@ -99,7 +99,7 @@ build_release:
     - export DOCKER_TLS_CLIENT_CERT=docker_tls_client_cert=$(cat "$dockerTLSClientCert")
     - export DOCKER_TLS_CA=docker_tls_ca=$(cat "$dockerTLSCA")
   script:
-    - "/kaniko/executor --force --single-snapshot --cleanup --context $CI_PROJECT_DIR
+    - "/kaniko/executor --force --single-snapshot --cleanup --context $CI_PROJECT_DIR --build-arg DOCKER_REGISTRY=${FROM_DOCKER_REGISTRY}
       \ --dockerfile $CI_PROJECT_DIR/${DOCKERFILE_PATH:-Dockerfile} --destination ${DOCKER_REPO}/${STORY_IMAGE}:${STORY_IMAGE_TAG}
       \ --cache=false --cache-repo=${DOCKER_REPO}/${STORY_IMAGE} --cache-ttl=1h --skip-tls-verify-registry=registry.ss
       \ --build-arg $REPOSITORY_USER --build-arg $REPOSITORY_PASSWORD --build-arg CI_JOB_TOKEN=$CI_JOB_TOKEN
