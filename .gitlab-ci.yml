@@ -116,7 +116,7 @@ build_release:
     refs:
       - "/^release\\/.*$/"
 
-sign_image: &_sign_image
+sign_image:
   stage: security
   image: docker.samokat.io/security/appsec/cosign:v1.10.2
   before_script:
