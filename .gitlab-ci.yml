@@ -1,0 +1,5 @@
+include:
+  - project: 'devops/cicd' 
+    file: 'start/start.yml'
+  - project: 'devops/cicd' 
+    file: 'base/kaniko_build.yml'
