@@ -12,13 +12,13 @@ start:
   except:
     - tags
 
-build:
-  stage: build
+".build_tmp":
   image:
     name: docker.samokat.io/global-external/gcr.io/kaniko-project/executor:v1.16.0-debug
-    entrypoint: [""]
+    entrypoint: ""
   before_script:
-    - echo "{\"auths\":{\"docker.samokat.io\":{\"username\":\"$registryUsername\",\"password\":\"$registryPassword\"}}}" > /kaniko/.docker/config.json
+    - echo "{\"auths\":{\"docker.samokat.io\":{\"username\":\"$registryUsername\",\"password\":\"$registryPassword\"}}}"
+      > /kaniko/.docker/config.json
     - BRANCH_NAME=$(echo $CI_COMMIT_REF_NAME | awk -F "/" '{print $1}')
     - TAG=$(echo $CI_COMMIT_REF_NAME | awk -F "/" '{print $2}')
     - STORY_IMAGE_TAG=$(echo ${TAG:-latest}-${BRANCH_NAME})
@@ -30,12 +30,43 @@ build:
     - export DOCKER_TLS_CLIENT_CERT=docker_tls_client_cert=$(cat "$dockerTLSClientCert")
     - export DOCKER_TLS_CA=docker_tls_ca=$(cat "$dockerTLSCA")
   script:
-    - >-
-      /kaniko/executor --force --single-snapshot --cleanup --context $CI_PROJECT_DIR 
-      --dockerfile ./Dockerfile --destination ${DOCKER_REPO}/${STORY_IMAGE}:${STORY_IMAGE_TAG} 
-      --cache=false --cache-repo=${DOCKER_REPO}/${STORY_IMAGE} --cache-ttl=1h --skip-tls-verify-registry=registry.ss 
-      --build-arg $REPOSITORY_USER --build-arg $REPOSITORY_PASSWORD --build-arg CI_JOB_TOKEN=$CI_JOB_TOKEN $KANIKO_EXECUTOR_ADDITIONAL_ARGS
+  - "/kaniko/executor --force --single-snapshot --cleanup --context $CI_PROJECT_DIR
+    \ --dockerfile $CI_PROJECT_DIR/${DOCKERFILE_PATH:-Dockerfile} --destination ${DOCKER_REPO}/${STORY_IMAGE}:${STORY_IMAGE_TAG}
+    \ --cache=false --cache-repo=${DOCKER_REPO}/${STORY_IMAGE} --cache-ttl=1h --skip-tls-verify-registry=registry.ss
+    \ --build-arg $REPOSITORY_USER --build-arg $REPOSITORY_PASSWORD --build-arg CI_JOB_TOKEN=$CI_JOB_TOKEN
+    $KANIKO_EXECUTOR_ADDITIONAL_ARGS"
   except:
     - tags
   tags:
     - k8s
+
+build_release:
+  image:
+    name: docker.samokat.io/global-external/gcr.io/kaniko-project/executor:v1.16.0-debug
+    entrypoint:
+    - ''
+  before_script:
+    - echo "{\"auths\":{\"docker.samokat.io\":{\"username\":\"$registryUsername\",\"password\":\"$registryPassword\"}}}"
+      > /kaniko/.docker/config.json
+    - BRANCH_NAME=$(echo $CI_COMMIT_REF_NAME | awk -F "/" '{print $1}')
+    - TAG=$(echo $CI_COMMIT_REF_NAME | awk -F "/" '{print $2}')
+    - STORY_IMAGE_TAG=$(echo ${TAG:-latest}-${BRANCH_NAME})
+    - echo $BRANCH_NAME
+    - echo $TAG
+    - echo $STORY_IMAGE_TAG
+    - echo $KANIKO_EXECUTOR_ADDITIONAL_ARGS
+    - export DOCKER_TLS_CLIENT_KEY=docker_tls_client_key=$(cat "$dockerTLSClientKey")
+    - export DOCKER_TLS_CLIENT_CERT=docker_tls_client_cert=$(cat "$dockerTLSClientCert")
+    - export DOCKER_TLS_CA=docker_tls_ca=$(cat "$dockerTLSCA")
+  script:
+    - "/kaniko/executor --force --single-snapshot --cleanup --context $CI_PROJECT_DIR
+      \ --dockerfile $CI_PROJECT_DIR/${DOCKERFILE_PATH:-Dockerfile} --destination ${DOCKER_REPO}/${STORY_IMAGE}:${STORY_IMAGE_TAG}
+      \ --cache=false --cache-repo=${DOCKER_REPO}/${STORY_IMAGE} --cache-ttl=1h --skip-tls-verify-registry=registry.ss
+      \ --build-arg $REPOSITORY_USER --build-arg $REPOSITORY_PASSWORD --build-arg CI_JOB_TOKEN=$CI_JOB_TOKEN
+      $KANIKO_EXECUTOR_ADDITIONAL_ARGS"
+  except:
+    - tags
+  tags:
+    - k8s
+  extends: ".build_tmp"
+  stage: build
