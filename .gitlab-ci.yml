@@ -2,6 +2,11 @@ stages:
   - start
   - build
 
+variables:
+  STORY_IMAGE: infrastructure/keep-assistant
+  DOCKER_REPO: docker.samokat.io
+  GIT_SSH_COMMAND: ssh -oStrictHostKeyChecking=no
+
 start:
   image: docker.samokat.io/global-external/docker.io/curlimages/curl:8.5.0
   stage: start
