@@ -1,6 +1,6 @@
-ARG DOCKER_REPO=docker.io/library
+ARG DOCKER_REGISTRY=docker.io/library
 
-FROM ${DOCKER_REPO}/node:22-alpine AS builder
+FROM ${DOCKER_REGISTRY}/node:22-alpine AS builder
 ARG NPM_REGISTRY=https://registry.npmjs.org
 RUN npm --registry $NPM_REGISTRY install npm -g
 
@@ -17,7 +17,7 @@ COPY default_config.toml /dist/config.toml
 
 RUN node /dist/app.js --version
 
-FROM ${DOCKER_REPO}/node:22-alpine
+FROM ${DOCKER_REGISTRY}/node:22-alpine
 
 USER root
 

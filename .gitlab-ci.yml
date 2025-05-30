@@ -6,6 +6,7 @@ variables:
   STORY_IMAGE: infrastructure/keep-assistant
   DOCKER_REPO: docker.samokat.io
   GIT_SSH_COMMAND: ssh -oStrictHostKeyChecking=no
+  FROM_DOCKER_REGISTRY: ${DOCKER_REPO}/global-external/docker.io 
 
 start:
   image: docker.samokat.io/global-external/docker.io/curlimages/curl:8.5.0
@@ -49,7 +50,7 @@ build_dev:
   image:
     name: docker.samokat.io/global-external/gcr.io/kaniko-project/executor:v1.16.0-debug
     entrypoint:
-    - ''
+      - ''
   before_script:
     - echo "{\"auths\":{\"docker.samokat.io\":{\"username\":\"$registryUsername\",\"password\":\"$registryPassword\"}}}"
       > /kaniko/.docker/config.json
@@ -82,7 +83,7 @@ build_release:
   image:
     name: docker.samokat.io/global-external/gcr.io/kaniko-project/executor:v1.16.0-debug
     entrypoint:
-    - ''
+      - ''
   before_script:
     - echo "{\"auths\":{\"docker.samokat.io\":{\"username\":\"$registryUsername\",\"password\":\"$registryPassword\"}}}"
       > /kaniko/.docker/config.json
