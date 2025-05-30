@@ -1,6 +1,7 @@
 stages:
   - start
   - build
+  - security
 
 variables:
   STORY_IMAGE: infrastructure/keep-assistant
@@ -115,3 +116,25 @@ build_release:
     refs:
       - "/^release\\/.*$/"
 
+sign_image: &_sign_image
+  stage: security
+  image: docker.samokat.io/security/appsec/cosign:v1.10.2
+  before_script:
+    - BRANCH_NAME=$(echo $CI_COMMIT_REF_NAME | awk -F "/" '{print $1}')
+    - TAG=$(echo $CI_COMMIT_REF_NAME | awk -F "/" '{print $2}')
+    - STORY_IMAGE_TAG=$(echo ${TAG:-latest}-${BRANCH_NAME})
+    - echo $BRANCH_NAME
+    - echo $TAG
+    - echo $STORY_IMAGE_TAG
+    - export VAULT_ADDR='https://vault.samokat.io:443'
+  script:
+    - cosign login -u $registryUsername -p $registryPassword docker.samokat.io
+    - cosign sign --key hashivault://cosign ${DOCKER_REPO}/${STORY_IMAGE}:${STORY_IMAGE_TAG}
+  rules:
+    - if: ($CI_COMMIT_BRANCH =~ /^bugfix\/.*$/) && ($STORY_IMAGE != null) && ($STORY_IMAGE != "")
+    - if: ($CI_COMMIT_BRANCH =~ /^hotfix\/.*$/) && ($STORY_IMAGE != null) && ($STORY_IMAGE != "")
+    - if: ($CI_COMMIT_BRANCH =~ /^feature\/.*$/) && ($STORY_IMAGE != null) && ($STORY_IMAGE != "")
+    - if: ($CI_COMMIT_BRANCH == "master") && ($STORY_IMAGE != null) && ($STORY_IMAGE != "")
+    - if: ($CI_COMMIT_BRANCH =~ /^release\/.*$/) && ($STORY_IMAGE != null) && ($STORY_IMAGE != "")
+  tags:
+    - k8s
