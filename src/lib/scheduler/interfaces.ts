@@ -21,6 +21,9 @@ export interface ISchedulerTaskDataSilenceAction extends ISchedulerTaskData {
 }
 
 export interface IScheduler {
+    readonly ready: boolean;
+    run: () => Promise<void>
+    close: () => Promise<void>
     runTask: (request: ISchedulerTaskData) => Promise<ISchedulerResultBody>
 }
 

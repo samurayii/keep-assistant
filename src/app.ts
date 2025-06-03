@@ -30,6 +30,7 @@ const bootstrap = async () => {
         const api_server = buildApiServer(config.api, api_server_logger);
 
         await metrics.run();
+        await scheduler.run();
 
         metrics.createGauge("healthy", "Healthcheck status");
 
@@ -54,6 +55,7 @@ const bootstrap = async () => {
 
         const stop_app = async () => {
             clearInterval(id_interval);
+            await scheduler.close();
             api_server.close();
             setImmediate( () => {
                 process.exit();
