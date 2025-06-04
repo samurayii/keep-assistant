@@ -1,27 +1,31 @@
 import { FastifyReply } from "fastify";
 import { $Inject } from "../../lib/dependency-injection";
 import { IMetrics, Metrics } from "../../lib/metrics";
-import { IApiServerFastifyInstance, IFastifyRequestActions } from "../interfaces";
+import { IApiServerFastifyInstance, IFastifyRequestActionsMemoryDBGet, IFastifyRequestActionsMemoryDBPost, IFastifyRequestActionsSilence } from "../interfaces";
 import { IScheduler, ISchedulerTaskDataSilenceAction, Scheduler } from "../../lib/scheduler";
 import chalk from "chalk";
+import { IMemoryDB, MemoryDB } from "../../lib/memory-db";
 
 export async function routeActions(
     fastify: IApiServerFastifyInstance,
     scheduler = $Inject<IScheduler>(Scheduler),
+    memory_db = $Inject<IMemoryDB>(MemoryDB),
     metrics = $Inject<IMetrics>(Metrics)
 ) {
     
     const url_path_silence = "/actions/silence";
+    const url_path_memory_db = "/actions/memorydb";
     
     metrics.createCounter("requests", "Requests for path");
     metrics.createCounter("requests_total", "Total requests count");
 
     metrics.add("requests_total", 0);
     metrics.add("requests", 0, {path: url_path_silence});
+    metrics.add("requests", 0, {path: url_path_memory_db});
 
     metrics.createHistogram("request_time_ms", [50, 100, 200, 500, 1000], "Request duration");
 
-    const handlerSilence = async function (request: IFastifyRequestActions, reply: FastifyReply) {
+    const handlerSilence = async function (request: IFastifyRequestActionsSilence, reply: FastifyReply) {
 
         const start_request_time = Date.now();
         const action_request: ISchedulerTaskDataSilenceAction = {
@@ -37,14 +41,32 @@ export async function routeActions(
         } 
 
         if (typeof request.query.namespace === "string") {
+            if (request.query.namespace.length > 32 || request.query.namespace.length === 0) {
+                reply.code(500);
+                reply.type("text/html");
+                reply.send("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>keep-assistant</title></head><body>Operation is <span style=\"color: #ff0000\">FAIL</span>. Parameters is not correct.</body></html>");
+                return;
+            }
             action_request.data.namespace = request.query.namespace;
         }
 
         if (typeof request.query.container === "string") {
+            if (request.query.container.length > 32 || request.query.container.length === 0) {
+                reply.code(500);
+                reply.type("text/html");
+                reply.send("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>keep-assistant</title></head><body>Operation is <span style=\"color: #ff0000\">FAIL</span>. Parameters is not correct.</body></html>");
+                return;
+            }
             action_request.data.container = request.query.container; 
         }
 
         if (typeof request.query.cluster_name === "string") {
+            if (request.query.cluster_name.length > 32 || request.query.cluster_name.length === 0) {
+                reply.code(500);
+                reply.type("text/html");
+                reply.send("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>keep-assistant</title></head><body>Operation is <span style=\"color: #ff0000\">FAIL</span>. Parameters is not correct.</body></html>");
+                return;
+            }
             action_request.data.cluster_name = request.query.cluster_name; 
         }
 
@@ -81,9 +103,112 @@ export async function routeActions(
 
     };
 
+    const handlerMemoryDBGet = async function (request: IFastifyRequestActionsMemoryDBGet, reply: FastifyReply) {
+
+        const start_request_time = Date.now();
+
+        if (typeof request.query.key !== "string") {
+            reply.code(500);
+            reply.type("application/json");
+            reply.send({
+                status: "fail",
+                message: "Operation is fail. ID is not set"
+            });
+            return;
+        } 
+
+        if (request.query.key.length > 32 || request.query.key.length === 0) {
+            reply.code(500);
+            reply.type("application/json");
+            reply.send({
+                status: "fail",
+                message: "Operation is fail. Key is not set"
+            });
+            return;
+        }
+
+        if (memory_db.exist(request.query.key) === true) {
+            reply.code(200);
+            reply.type("application/json");
+            reply.send({
+                status: "success",
+                data: memory_db.get(request.query.key)
+            });
+        } else {
+            reply.code(404);
+            reply.type("application/json");
+            reply.send({
+                status: "fail",
+                message: `Operation is fail. Key "${request.query.key}" not found`
+            });
+        }
+
+        metrics.add("requests_total", 1);
+        metrics.add("requests", 1, {path: url_path_memory_db});
+        metrics.add("request_time_ms", Date.now() - start_request_time, {path: url_path_memory_db});
+
+    };
+
+    const handlerMemoryDBPost = async function (request: IFastifyRequestActionsMemoryDBPost, reply: FastifyReply) {
+
+        const start_request_time = Date.now();
+
+        if (typeof request.body.status !== "string" || typeof request.body.key !== "string") {
+            reply.code(500);
+            reply.type("application/json");
+            reply.send({
+                status: "fail",
+                message: "Operation is fail. Key \"status\" or \"key\" not set"
+            });
+            return;
+        }
+
+        if (request.body.status.length > 32 || request.body.key.length > 32 || request.body.status.length === 0 || request.body.key.length === 0) {
+            reply.code(500);
+            reply.type("application/json");
+            reply.send({
+                status: "fail",
+                message: "Operation is fail. Key \"status\" or \"key\" not set"
+            });
+            return;
+        }
+
+        let ttl = 240;
+
+        if (typeof request.body.ttl === "number") {
+            ttl = request.body.ttl;
+        }
+
+        memory_db.put(request.body.key, request.body.status, ttl);       
+
+        metrics.add("requests_total", 1);
+        metrics.add("requests", 1, {path: url_path_memory_db});
+        metrics.add("request_time_ms", Date.now() - start_request_time, {path: url_path_memory_db});
+
+        reply.code(200);
+        reply.type("application/json");
+        reply.send({
+            status: "success",
+            message: `Operation is success. Key "${request.body.key}" added`
+        });
+
+    };
+
     fastify.route({
         url: url_path_silence,
         handler: handlerSilence,
+        method: ["GET"]
+    });
+
+    fastify.route({
+        url: url_path_memory_db,
+        handler: handlerMemoryDBPost,
+        method: ["POST"]
+    });
+
+    fastify.route({
+        url: url_path_memory_db,
+        handler: handlerMemoryDBGet,
         method: ["GET"]
     });
     

@@ -6,6 +6,7 @@ import { Metrics } from "./lib/metrics";
 import { HealthController } from "./lib/health-controller";
 import { $Singleton } from "./lib/dependency-injection";
 import { Scheduler } from "./lib/scheduler";
+import { MemoryDB } from "./lib/memory-db";
 
 const logger = new LoggerEventEmitter(config.logger);
 
@@ -19,8 +20,10 @@ $Singleton(Metrics.name, undefined, () => {return metrics;});
 $Singleton(HealthController.name, undefined, () => {return health_controller;});
 
 const scheduler = new Scheduler(config.connection, logger.child("scheduler"));
+const memory_db = new MemoryDB(logger.child("memory-db"));
 
 $Singleton(Scheduler.name, undefined, () => {return scheduler;});
+$Singleton(MemoryDB.name, undefined, () => {return memory_db;});
 
 const bootstrap = async () => {
 
@@ -55,6 +58,7 @@ const bootstrap = async () => {
 
         const stop_app = async () => {
             clearInterval(id_interval);
+            memory_db.clear();
             await scheduler.close();
             api_server.close();
             setImmediate( () => {

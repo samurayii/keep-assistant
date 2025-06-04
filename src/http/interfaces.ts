@@ -5,7 +5,7 @@ export interface IApiServerFastifyInstance extends FastifyInstance {
     logger: ILoggerEventEmitter
 }
 
-export interface IFastifyRequestActions extends FastifyRequest {
+export interface IFastifyRequestActionsSilence extends FastifyRequest {
     query: {
         namespace?: string
         container?: string
@@ -14,3 +14,16 @@ export interface IFastifyRequestActions extends FastifyRequest {
     }
 }
 
+export interface IFastifyRequestActionsMemoryDBGet extends FastifyRequest {
+    query: {
+        key: string
+    }
+}
+
+export interface IFastifyRequestActionsMemoryDBPost extends FastifyRequest {
+    body: {
+        key: string
+        status: string
+        ttl?: string
+    }
+}
