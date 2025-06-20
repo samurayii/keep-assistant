@@ -33,15 +33,25 @@ export async function routeActions(
             data: {}
         };
 
-        if (typeof request.query.namespace !== "string" && typeof request.query.container !== "string") {
+        if (typeof request.query.namespace !== "string" && typeof request.query.container !== "string" && typeof request.query.fingerprint !== "string") {
             reply.code(500);
             reply.type("text/html");
-            reply.send("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>keep-assistant</title></head><body>Operation is <span style=\"color: #ff0000\">FAIL</span>. Key <span style=\"color: #ff0000\">\"namespace\"</span> or <span style=\"color: #ff0000\">\"container\"</span> not set.</body></html>");
+            reply.send("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>keep-assistant</title></head><body>Operation is <span style=\"color: #ff0000\">FAIL</span>. Key <span style=\"color: #ff0000\">\"fingerprint\"</span>, <span style=\"color: #ff0000\">\"namespace\"</span> or <span style=\"color: #ff0000\">\"container\"</span> not set.</body></html>");
             return;
-        } 
+        }
+        
+        if (typeof request.query.fingerprint === "string") {
+            if (request.query.fingerprint.length > 64 || request.query.fingerprint.length === 0) {
+                reply.code(500);
+                reply.type("text/html");
+                reply.send("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>keep-assistant</title></head><body>Operation is <span style=\"color: #ff0000\">FAIL</span>. Parameters is not correct.</body></html>");
+                return;
+            }
+            action_request.data.fingerprint = request.query.fingerprint;
+        }
 
         if (typeof request.query.namespace === "string") {
-            if (request.query.namespace.length > 32 || request.query.namespace.length === 0) {
+            if (request.query.namespace.length > 64 || request.query.namespace.length === 0) {
                 reply.code(500);
                 reply.type("text/html");
                 reply.send("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>keep-assistant</title></head><body>Operation is <span style=\"color: #ff0000\">FAIL</span>. Parameters is not correct.</body></html>");
@@ -51,7 +61,7 @@ export async function routeActions(
         }
 
         if (typeof request.query.container === "string") {
-            if (request.query.container.length > 32 || request.query.container.length === 0) {
+            if (request.query.container.length > 64 || request.query.container.length === 0) {
                 reply.code(500);
                 reply.type("text/html");
                 reply.send("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>keep-assistant</title></head><body>Operation is <span style=\"color: #ff0000\">FAIL</span>. Parameters is not correct.</body></html>");

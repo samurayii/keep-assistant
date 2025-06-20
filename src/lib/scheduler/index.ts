@@ -144,6 +144,10 @@ export class Scheduler implements IScheduler {
             cel_conditions.push(`alert.labels.cluster_name == "${request.data.cluster_name}"`);
         }
 
+        if (typeof request.data.fingerprint === "string") {
+            cel_conditions.push(`fingerprint == "${request.data.fingerprint}"`);
+        }
+
         if (typeof request.data.container === "string") {
             cel_conditions.push(`alert.labels.container == "${request.data.container}"`);
         }

@@ -13,6 +13,7 @@ export interface ISchedulerTaskData {
 
 export interface ISchedulerTaskDataSilenceAction extends ISchedulerTaskData {
     data: {
+        fingerprint?: string
         namespace?: string
         container?: string
         cluster_name?: string

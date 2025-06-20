@@ -7,6 +7,7 @@ export interface IApiServerFastifyInstance extends FastifyInstance {
 
 export interface IFastifyRequestActionsSilence extends FastifyRequest {
     query: {
+        fingerprint: string
         namespace?: string
         container?: string
         cluster_name?: string
