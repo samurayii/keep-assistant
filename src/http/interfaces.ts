@@ -28,3 +28,10 @@ export interface IFastifyRequestActionsMemoryDBPost extends FastifyRequest {
         ttl?: string
     }
 }
+
+export interface IFastifyRequestActionsInstancePost extends FastifyRequest {
+    body: {
+        duration: number
+        instance: string
+    }
+}

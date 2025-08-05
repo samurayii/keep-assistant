@@ -1,5 +1,5 @@
 import { ILoggerEventEmitter } from "logger-event-emitter";
-import { IScheduler, ISchedulerConfig, ISchedulerResultBody, ISchedulerTaskData, ISchedulerTaskDataSilenceAction } from "./interfaces";
+import { IScheduler, ISchedulerConfig, ISchedulerResultBody, ISchedulerTaskData, ISchedulerTaskDataSilenceAction, ISchedulerTaskDataSilenceActionInstances } from "./interfaces";
 import fetch from "node-fetch";
 import chalk from "chalk";
 
@@ -120,7 +120,11 @@ export class Scheduler implements IScheduler {
         this._logger.debug(`Request for ${request.action} action`);
 
         if (request.action === "silence") {
-            return this._silenceAction(<ISchedulerTaskDataSilenceAction>request);
+            return this._silenceActionGeneral(<ISchedulerTaskDataSilenceAction>request);
+        }
+
+        if (request.action === "silence:instances") {
+            return this._silenceActionInstances(<ISchedulerTaskDataSilenceActionInstances>request);
         }
 
         return <ISchedulerResultBody>{
@@ -129,11 +133,78 @@ export class Scheduler implements IScheduler {
         };
     }
 
-    async _silenceAction (request: ISchedulerTaskDataSilenceAction): Promise<ISchedulerResultBody> {
+    async _silenceAction (options: fetch.RequestInit): Promise<ISchedulerResultBody> {
+
+        const result_url = `${this._url}/maintenance`;
+
+        this._logger.debug(`Request to ${chalk.cyan(result_url)}`);
+
+        let response: fetch.Response; 
+
+        try {
+            response = await fetch(result_url, options);
+        } catch (error) {
+            this._logger.error(`Request is fail. Error: ${chalk.red(error.message)}`);
+            this._logger.trace(error.stack);
+            return <ISchedulerResultBody>{
+                status: "error",
+                message: "Operation \"silence\" is fail"
+            };
+        }      
+
+        if (response.ok === true) {
+
+            const content_type = response.headers.get("content-type");
+
+            if (typeof content_type !== "string") {
+                return <ISchedulerResultBody>{
+                    status: "error",
+                    message: "Operation \"silence\" is fail. Server return content-type: ${content_type}"
+                };
+            }
+
+            if (content_type.toLowerCase() !== "application/json") {
+                return <ISchedulerResultBody>{
+                    status: "error",
+                    message: "Operation \"silence\" is fail. Server return content-type: ${content_type}"
+                };
+            }
+
+            let result: TSilenceActionResponse;
+            
+            try {
+                result = await response.json();
+            } catch (error) {
+                this._logger.error(`Response JSON parsing error. Error: ${chalk.red(error.message)}`);
+                this._logger.trace(error.stack);
+                return <ISchedulerResultBody>{
+                    status: "error",
+                    message: "Operation \"silence\" is fail. Server return code: ${response.status}"
+                };
+            }           
+
+            this._logger.debug(`Silence rule ID ${chalk.cyan(result.id)} created. Duration: ${chalk.cyan(result.duration_seconds)}, started: ${chalk.cyan(result.start_time)}`);
+
+            return <ISchedulerResultBody>{
+                status: "success",
+                message: "Operation \"silence\" completed."
+            };
+
+        } else {
+            this._logger.error(`Request ${chalk.red(result_url)} is fail. Server return code: ${chalk.red(response.status)}, status: ${chalk.red(response.statusText)}`);
+            this._logger.trace(await response.text());
+            return <ISchedulerResultBody>{
+                status: "error",
+                message: "Operation \"silence\" is fail. Server return code: ${response.status}"
+            };
+        }
+
+    }
+
+    async _silenceActionGeneral (request: ISchedulerTaskDataSilenceAction): Promise<ISchedulerResultBody> {
 
         this._logger.debug("Activate SILENCE action");
 
-        const result_url = `${this._url}/maintenance`;
         const cel_conditions: string[] = [];
 
         if (typeof request.data.namespace === "string") {
@@ -173,69 +244,36 @@ export class Scheduler implements IScheduler {
             }),
         };
         
-        this._logger.debug(`Request to ${chalk.cyan(result_url)}`);
+        return this._silenceAction(options);
 
-        let response: fetch.Response; 
+    }
 
-        try {
-            response = await fetch(result_url, options);
-        } catch (error) {
-            this._logger.error(`Request is fail. Error: ${chalk.red(error.message)}`);
-            this._logger.trace(error.stack);
-            return <ISchedulerResultBody>{
-                status: "error",
-                message: `Operation "${request.action}" is fail`
-            };
-        }      
+    async _silenceActionInstances (request: ISchedulerTaskDataSilenceActionInstances): Promise<ISchedulerResultBody> {
 
-        if (response.ok === true) {
+        this._logger.debug("Activate SILENCE:INSTANCES action");
 
-            const content_type = response.headers.get("content-type");
-
-            if (typeof content_type !== "string") {
-                return <ISchedulerResultBody>{
-                    status: "error",
-                    message: `Operation "${request.action}" is fail. Server return content-type: ${content_type}`
-                };
-            }
-
-            if (content_type.toLowerCase() !== "application/json") {
-                return <ISchedulerResultBody>{
-                    status: "error",
-                    message: `Operation "${request.action}" is fail. Server return content-type: ${content_type}`
-                };
-            }
-
-            let result: TSilenceActionResponse;
-            
-            try {
-                result = await response.json();
-            } catch (error) {
-                this._logger.error(`Response JSON parsing error. Error: ${chalk.red(error.message)}`);
-                this._logger.trace(error.stack);
-                return <ISchedulerResultBody>{
-                    status: "error",
-                    message: `Operation "${request.action}" is fail. Server return code: ${response.status}`
-                };
-            }
-
-            
-
-            this._logger.debug(`Silence rule ID ${chalk.cyan(result.id)} created. Duration: ${chalk.cyan(result.duration_seconds)}, started: ${chalk.cyan(result.start_time)}`);
-
-            return <ISchedulerResultBody>{
-                status: "success",
-                message: `Operation "${request.action}" completed.`
-            };
-
-        } else {
-            this._logger.error(`Request ${chalk.red(result_url)} is fail. Server return code: ${chalk.red(response.status)}, status: ${chalk.red(response.statusText)}`);
-            this._logger.trace(await response.text());
-            return <ISchedulerResultBody>{
-                status: "error",
-                message: `Operation "${request.action}" is fail. Server return code: ${response.status}`
-            };
-        }
+        const options: fetch.RequestInit = {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "x-api-key": this._config.api_key
+            },
+            body: JSON.stringify({
+                name: `silence-rule-c${Date.now()}`,
+                description: `Rule created by keep-assistant. Created time: ${(new Date()).toString()}`,
+                start_time: (new Date(Date.now()+((new Date()).getTimezoneOffset()*-1)*1000*60)).toISOString(),
+                cel_query: `message.contains("${request.data.instance}")`,
+                suppress: false,
+                enabled: true,
+                duration_seconds: request.data.duration,
+                ignore_statuses: [
+                    "resolved",
+                    "acknowledged"
+                ]
+            }),
+        };
+        
+        return this._silenceAction(options);
 
     }
 

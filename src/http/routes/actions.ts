@@ -1,8 +1,8 @@
 import { FastifyReply } from "fastify";
 import { $Inject } from "../../lib/dependency-injection";
 import { IMetrics, Metrics } from "../../lib/metrics";
-import { IApiServerFastifyInstance, IFastifyRequestActionsMemoryDBGet, IFastifyRequestActionsMemoryDBPost, IFastifyRequestActionsSilence } from "../interfaces";
-import { IScheduler, ISchedulerTaskDataSilenceAction, Scheduler } from "../../lib/scheduler";
+import { IApiServerFastifyInstance, IFastifyRequestActionsInstancePost, IFastifyRequestActionsMemoryDBGet, IFastifyRequestActionsMemoryDBPost, IFastifyRequestActionsSilence } from "../interfaces";
+import { IScheduler, ISchedulerTaskDataSilenceAction, ISchedulerTaskDataSilenceActionInstances, Scheduler } from "../../lib/scheduler";
 import chalk from "chalk";
 import { IMemoryDB, MemoryDB } from "../../lib/memory-db";
 
@@ -15,6 +15,7 @@ export async function routeActions(
     
     const url_path_silence = "/actions/silence";
     const url_path_memory_db = "/actions/memorydb";
+    const url_path_instance = "/actions/silence/instance";
     
     metrics.createCounter("requests", "Requests for path");
     metrics.createCounter("requests_total", "Total requests count");
@@ -33,7 +34,11 @@ export async function routeActions(
             data: {}
         };
 
-        if (typeof request.query.namespace !== "string" && typeof request.query.container !== "string" && typeof request.query.fingerprint !== "string") {
+        if (
+            typeof request.query.namespace !== "string" && 
+            typeof request.query.container !== "string" && 
+            typeof request.query.fingerprint !== "string"
+        ) {
             reply.code(500);
             reply.type("text/html");
             reply.send("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>keep-assistant</title></head><body>Operation is <span style=\"color: #ff0000\">FAIL</span>. Key <span style=\"color: #ff0000\">\"fingerprint\"</span>, <span style=\"color: #ff0000\">\"namespace\"</span> or <span style=\"color: #ff0000\">\"container\"</span> not set.</body></html>");
@@ -204,6 +209,72 @@ export async function routeActions(
 
     };
 
+    const handlerInstancePost = async function (request: IFastifyRequestActionsInstancePost, reply: FastifyReply) {
+
+        const start_request_time = Date.now();
+
+        if (typeof request.body.instance !== "string") {
+            reply.code(500);
+            reply.type("application/json");
+            reply.send({
+                status: "fail",
+                message: "Operation is fail. Key \"instance\" not set"
+            });
+            return;
+        }
+
+        if (request.body.instance.length === 0 || request.body.instance.length > 64) {
+            reply.code(500);
+            reply.type("application/json");
+            reply.send({
+                status: "fail",
+                message: "Operation is fail. Key \"instance\" not set"
+            });
+            return;
+        }
+
+        const action_request: ISchedulerTaskDataSilenceActionInstances = {
+            action: "silence:instances",
+            data: {
+                duration: 86400,
+                instance: request.body.instance
+            }
+        };
+
+        if (typeof request.body.duration === "number") {
+            action_request.data.duration = request.body.duration;
+        }      
+
+        const result = await scheduler.runTask(action_request);
+
+        metrics.add("requests_total", 1);
+        metrics.add("requests", 1, {path: url_path_silence});
+        metrics.add("request_time_ms", Date.now() - start_request_time, {path: url_path_silence});
+
+        if (result.status !== "success") {
+            reply.code(200);
+            reply.type("application/json");
+            reply.send({
+                status: "fail",
+                message: `Operation is fail. Message: ${result.message}`
+            });
+        } else {
+            reply.code(200);
+            reply.type("application/json");
+            reply.send({
+                status: "success",
+                message: `Silence rule created. Duration ${action_request.data.duration} seconds`
+            });
+        }
+
+    };
+
+    fastify.route({
+        url: url_path_instance,
+        handler: handlerInstancePost,
+        method: ["POST"]
+    });
+    
     fastify.route({
         url: url_path_silence,
         handler: handlerSilence,

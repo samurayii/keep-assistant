@@ -6,11 +6,10 @@ export interface ISchedulerResultBody {
     message: string
 }
 
-export type TSchedulerTaskDataActionType = "silence"
+export type TSchedulerTaskDataActionType = "silence" | "silence:instances"
 export interface ISchedulerTaskData {
     action: TSchedulerTaskDataActionType
 }
-
 export interface ISchedulerTaskDataSilenceAction extends ISchedulerTaskData {
     data: {
         fingerprint?: string
@@ -18,6 +17,12 @@ export interface ISchedulerTaskDataSilenceAction extends ISchedulerTaskData {
         container?: string
         cluster_name?: string
         duration?: number
+    }
+}
+export interface ISchedulerTaskDataSilenceActionInstances extends ISchedulerTaskData {
+    data: {
+        duration: number
+        instance: string
     }
 }
 
