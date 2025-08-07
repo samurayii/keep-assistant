@@ -252,6 +252,12 @@ export class Scheduler implements IScheduler {
 
         this._logger.debug("Activate SILENCE:INSTANCES action");
 
+        let description = `Rule created by keep-assistant. Created time: ${(new Date()).toString()}`;
+
+        if (request.data.actor.length > 0 ) {
+            description = `Rule created by keep-assistant, actor "${request.data.actor}". Created time: ${(new Date()).toString()}`;
+        }
+
         const options: fetch.RequestInit = {
             method: "POST",
             headers: {
@@ -260,9 +266,9 @@ export class Scheduler implements IScheduler {
             },
             body: JSON.stringify({
                 name: `silence-rule-c${Date.now()}`,
-                description: `Rule created by keep-assistant. Created time: ${(new Date()).toString()}`,
+                description: description,
                 start_time: (new Date(Date.now()+((new Date()).getTimezoneOffset()*-1)*1000*60)).toISOString(),
-                cel_query: `message.contains("${request.data.instance}")`,
+                cel_query: `labels.instance.contains("${request.data.instance}")`,
                 suppress: false,
                 enabled: true,
                 duration_seconds: request.data.duration,

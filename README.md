@@ -83,9 +83,10 @@
 | /healthcheck/readiness | GET | 200 | проверить готовность сервиса | OK |
 | /healthcheck/startup | GET | 200 | проверить готовность сервиса после запуска | OK |
 | /metrics | GET | 200 | получить метрики в формате Prometheus | OK |
-| /api/v1/actions/silence | GET | 200 | сделать правило обслуживания (молчания) на сервере keep, параметры: duration, fingerprint, namespace, container, cluster_name | OK |
+| /v1/actions/silence | GET | 200 | сделать правило обслуживания (молчания) на сервере keep, параметры: duration, fingerprint, namespace, container, cluster_name | OK |
 | /v1/actions/memorydb | GET | 200 | получить значение ключа, параметры: key | OK |
 | /v1/actions/memorydb | POST | 200 | добавить ключ | [пример](#v1_add_memory_record) |
+| /v1/actions/silence/instance | POST | 200 | сделать правило обслуживания (молчания) на сервере keep, параметры: instance, duration, actor | [пример](#v1_silence_instance) |
 
 ## Примеры ответов/запросов
 
@@ -129,5 +130,26 @@
 {
     "status": "success",
     "data": "Operation is success. Key \"key1\" added"
+}
+```
+
+### <a name="v1_silence_instance"></a> Cделать правило обслуживания: /v1/actions/silence/instance
+
+**Тело запроса**
+
+```js
+{
+    "duration": 86400,
+    "instance": "server-1,
+    "actor": "user"
+}
+```
+
+**Тело ответа**
+
+```js
+{
+    "status": "success",
+    "data": "Silence rule created. Duration 86400 seconds"
 }
 ```

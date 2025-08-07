@@ -23,6 +23,7 @@ export interface ISchedulerTaskDataSilenceActionInstances extends ISchedulerTask
     data: {
         duration: number
         instance: string
+        actor: string
     }
 }
 

@@ -237,9 +237,23 @@ export async function routeActions(
             action: "silence:instances",
             data: {
                 duration: 86400,
-                instance: request.body.instance
+                instance: request.body.instance,
+                actor: ""
             }
         };
+
+        if (request.body.actor !== undefined) {
+            if (request.body.actor.length === 0 || request.body.actor.length > 64) {
+                reply.code(500);
+                reply.type("application/json");
+                reply.send({
+                    status: "fail",
+                    message: "Operation is fail. Key \"actor\" not set"
+                });
+                return;
+            }
+            action_request.data.actor = request.body.actor;
+        }
 
         if (typeof request.body.duration === "number") {
             action_request.data.duration = request.body.duration;

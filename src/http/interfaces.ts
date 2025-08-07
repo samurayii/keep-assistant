@@ -33,5 +33,6 @@ export interface IFastifyRequestActionsInstancePost extends FastifyRequest {
     body: {
         duration: number
         instance: string
+        actor?: string
     }
 }
